@@ -9,17 +9,23 @@ abstract class AuthenticationState extends Equatable {
 
 /// UnInitialized
 class UnAuthenticationState extends AuthenticationState {
-
   UnAuthenticationState();
 
   @override
   String toString() => 'UnAuthenticationState';
 }
 
+class SmsSentAuthenticationState extends AuthenticationState {
+  SmsSentAuthenticationState();
+
+  @override
+  String toString() => 'SmsSentAuthenticationState';
+}
+
 /// Initialized
-class InAuthenticationState extends AuthenticationState {
-  InAuthenticationState(this.hello);
-  
+class SignedInAuthenticationState extends AuthenticationState {
+  SignedInAuthenticationState(this.hello);
+
   final String hello;
 
   @override
@@ -31,9 +37,9 @@ class InAuthenticationState extends AuthenticationState {
 
 class ErrorAuthenticationState extends AuthenticationState {
   ErrorAuthenticationState(this.errorMessage);
- 
+
   final String errorMessage;
-  
+
   @override
   String toString() => 'ErrorAuthenticationState';
 

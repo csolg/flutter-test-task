@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test_task/bloc/authentication/index.dart';
 import 'package:meta/meta.dart';
 
@@ -10,25 +11,90 @@ abstract class AuthenticationEvent {
       {AuthenticationState currentState, AuthenticationBloc bloc});
 }
 
-class UnAuthenticationEvent extends AuthenticationEvent {
+class SignOutAuthenticationEvent extends AuthenticationEvent {
   @override
-  Stream<AuthenticationState> applyAsync({AuthenticationState? currentState, AuthenticationBloc? bloc}) async* {
+  Stream<AuthenticationState> applyAsync(
+      {AuthenticationState? currentState, AuthenticationBloc? bloc}) async* {
     yield UnAuthenticationState();
   }
 }
 
-class LoadAuthenticationEvent extends AuthenticationEvent {
-   
+class SmsSentAuthenticationEvent extends AuthenticationEvent {
+  final String verificationId;
+  SmsSentAuthenticationEvent(this.verificationId);
+
+  @override
+  Stream<AuthenticationState> applyAsync(
+      {AuthenticationState? currentState, AuthenticationBloc? bloc}) async* {
+    bloc?.verficationId = verificationId;
+    yield SmsSentAuthenticationState();
+  }
+}
+
+class FailedAuthenticationEvent extends AuthenticationEvent {
+  final String message;
+  FailedAuthenticationEvent(this.message);
+
+  @override
+  Stream<AuthenticationState> applyAsync(
+      {AuthenticationState? currentState, AuthenticationBloc? bloc}) async* {
+    print(message);
+    yield ErrorAuthenticationState(message);
+  }
+}
+
+class SmsSendAuthenticationEvent extends AuthenticationEvent {
+  SmsSendAuthenticationEvent(this.phone);
+
+  final String phone;
+
+  @override
+  Stream<AuthenticationState> applyAsync(
+      {AuthenticationState? currentState, AuthenticationBloc? bloc}) async* {
+    print(phone);
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: phone,
+      verificationCompleted: (PhoneAuthCredential credential) {
+        // ANDROID ONLY!
+        print("SmsSendAuthenticationEvent verificationCompleted");
+        bloc!.add(SignInAuthenticationEvent(credential));
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        bloc!.add(FailedAuthenticationEvent(e.code + ': ' + (e.message ?? '')));
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        bloc!.add(SmsSentAuthenticationEvent(verificationId));
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
+    yield UnAuthenticationState();
+  }
+}
+
+class SignInAuthenticationEvent extends AuthenticationEvent {
+  PhoneAuthCredential? credential;
+  final String? code;
+
+  SignInAuthenticationEvent([this.credential, this.code]);
+
   @override
   Stream<AuthenticationState> applyAsync(
       {AuthenticationState? currentState, AuthenticationBloc? bloc}) async* {
     try {
-      yield UnAuthenticationState();
-      await Future.delayed(const Duration(seconds: 1));
-      yield InAuthenticationState('Hello world');
+      // Create a PhoneAuthCredential with the code
+      if (code != null) {
+        credential = PhoneAuthProvider.credential(
+          verificationId: bloc!.verficationId!,
+          smsCode: code!,
+        );
+      }
+
+      // Sign the user in (or link) with the credential
+      await FirebaseAuth.instance.signInWithCredential(credential!);
     } catch (_, stackTrace) {
-      developer.log('$_', name: 'LoadAuthenticationEvent', error: _, stackTrace: stackTrace);
-      yield ErrorAuthenticationState( _.toString());
+      developer.log('$_',
+          name: 'LoadAuthenticationEvent', error: _, stackTrace: stackTrace);
+      yield ErrorAuthenticationState(_.toString());
     }
   }
 }

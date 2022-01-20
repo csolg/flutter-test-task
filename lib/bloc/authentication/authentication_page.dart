@@ -15,7 +15,7 @@ class _AuthenticationPageState extends State<AuthenticationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Authentication'),
+        title: Text('Sign in'),
       ),
       body: AuthenticationScreen(authenticationBloc: _authenticationBloc),
     );
