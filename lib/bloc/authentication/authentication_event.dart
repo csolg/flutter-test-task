@@ -4,6 +4,8 @@ import 'dart:developer' as developer;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test_task/bloc/authentication/index.dart';
+import 'package:flutter_test_task/bloc/gallery/gallery_page.dart';
+import 'package:get/route_manager.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -100,6 +102,8 @@ class SignInAuthenticationEvent extends AuthenticationEvent {
         'uid': user.user!.uid,
         'phoneNumber': user.user!.phoneNumber,
       });
+
+      Get.to(GalleryPage());
     } catch (_, stackTrace) {
       developer.log('$_',
           name: 'LoadAuthenticationEvent', error: _, stackTrace: stackTrace);

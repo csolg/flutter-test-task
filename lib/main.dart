@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test_task/bloc/authentication/authentication_page.dart';
 import 'package:form_builder_validators/localization/l10n.dart';
+import 'package:get/route_manager.dart';
 
 import 'firebase_options.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       supportedLocales: const [
         Locale('ru'),
         Locale('en'),
