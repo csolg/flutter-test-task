@@ -32,7 +32,7 @@ dependencies:
   flutter_localizations: # Add this line
     sdk: flutter         # Add this line
 
-  flutter_bloc: ^8.0.0
+  flutter_bloc: ^8.0.1
   equatable: ^2.0.3
 
 
