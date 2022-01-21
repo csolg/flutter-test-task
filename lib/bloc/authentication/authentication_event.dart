@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test_task/bloc/authentication/index.dart';
 import 'package:meta/meta.dart';
@@ -57,7 +58,7 @@ class SmsSendAuthenticationEvent extends AuthenticationEvent {
       verificationCompleted: (PhoneAuthCredential credential) {
         // ANDROID ONLY!
         print("SmsSendAuthenticationEvent verificationCompleted");
-        bloc!.add(SignInAuthenticationEvent(credential));
+        bloc!.add(SignInAuthenticationEvent(null, credential));
       },
       verificationFailed: (FirebaseAuthException e) {
         bloc!.add(FailedAuthenticationEvent(e.code + ': ' + (e.message ?? '')));
@@ -75,7 +76,7 @@ class SignInAuthenticationEvent extends AuthenticationEvent {
   PhoneAuthCredential? credential;
   final String? code;
 
-  SignInAuthenticationEvent([this.credential, this.code]);
+  SignInAuthenticationEvent([this.code, this.credential]);
 
   @override
   Stream<AuthenticationState> applyAsync(
@@ -90,7 +91,15 @@ class SignInAuthenticationEvent extends AuthenticationEvent {
       }
 
       // Sign the user in (or link) with the credential
-      await FirebaseAuth.instance.signInWithCredential(credential!);
+      final user =
+          await FirebaseAuth.instance.signInWithCredential(credential!);
+
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      users.add({
+        'uid': user.user!.uid,
+        'phoneNumber': user.user!.phoneNumber,
+      });
     } catch (_, stackTrace) {
       developer.log('$_',
           name: 'LoadAuthenticationEvent', error: _, stackTrace: stackTrace);

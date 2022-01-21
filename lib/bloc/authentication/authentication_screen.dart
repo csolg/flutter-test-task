@@ -65,10 +65,8 @@ class AuthenticationScreenState extends State<AuthenticationScreen> {
                                 _formKey.currentState!.save();
                                 if (_formKey.currentState!.validate()) {
                                   widget._authenticationBloc.add(
-                                      SignInAuthenticationEvent(
-                                          null,
-                                          _formKey
-                                              .currentState!.value['code']));
+                                      SignInAuthenticationEvent(_formKey
+                                          .currentState!.value['code']));
                                 }
                               },
                               child: const Text('Sign In'))
