@@ -8,6 +8,6 @@ class PhotoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Text(photo.path!);
   }
 }
