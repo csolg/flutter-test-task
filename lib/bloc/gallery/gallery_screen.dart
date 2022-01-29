@@ -45,6 +45,7 @@ class GalleryScreenState extends State<GalleryScreen> {
             return GridView.count(
                 crossAxisCount: 2,
                 children: currentState.photos
+                    .where((photo) => photo.path != null)
                     .map((photo) => PhotoWidget(photo: photo))
                     .toList());
           }

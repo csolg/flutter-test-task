@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'photo.g.dart';
@@ -8,10 +9,11 @@ part 'photo.g.dart';
 class Photo {
   static const String collectionName = 'photos';
 
-  String? userUID;
-  String? path;
+  String id;
+  String userUID;
+  String path;
 
-  Photo({this.userUID, this.path});
+  Photo({required this.id, required this.userUID, required this.path});
 
   static Future<Photo> add(path) async {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -41,6 +43,12 @@ class Photo {
     return querySnapshot.docs
         .map((doc) => Photo.fromJson(doc.data() as Map<String, dynamic>))
         .toList();
+  }
+
+  Future destroy() async {
+    FirebaseStorage.instance.refFromURL(path).delete().then((_) async {
+      await collection().doc(id).delete();
+    });
   }
 
   static DocumentReference ref(String document) {
