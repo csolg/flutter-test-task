@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test_task/bloc/authentication/index.dart';
 import 'package:flutter_test_task/bloc/gallery/gallery_page.dart';
+import 'package:flutter_test_task/repositories/authentication_repository.dart';
 import 'package:get/route_manager.dart';
 import 'package:meta/meta.dart';
 
@@ -103,7 +104,9 @@ class SignInAuthenticationEvent extends AuthenticationEvent {
         'phoneNumber': user.user!.phoneNumber,
       });
 
-      Get.to(GalleryPage());
+      AuthenticationRepository.currentUser = user;
+
+      Get.off(GalleryPage());
     } catch (_, stackTrace) {
       developer.log('$_',
           name: 'LoadAuthenticationEvent', error: _, stackTrace: stackTrace);

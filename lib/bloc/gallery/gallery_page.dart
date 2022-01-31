@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_task/bloc/authentication/authentication_bloc.dart';
 import 'package:flutter_test_task/bloc/gallery/index.dart';
 
 class GalleryPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _GalleryPageState extends State<GalleryPage> {
         title: Text('Gallery'),
       ),
       body: GalleryScreen(galleryBloc: _galleryBloc),
+      drawer: Drawer(child: Text('Phone Number')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _galleryBloc.add(AddPhotoGalleryEvent());
