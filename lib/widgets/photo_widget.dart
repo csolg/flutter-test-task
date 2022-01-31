@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_task/bloc/gallery/gallery_bloc.dart';
+import 'package:flutter_test_task/bloc/gallery/index.dart';
 import 'package:flutter_test_task/models/photo.dart';
 
 class PhotoWidget extends StatelessWidget {
-  const PhotoWidget({Key? key, required this.photo}) : super(key: key);
+  const PhotoWidget({Key? key, required this.photo, required this.bloc})
+      : super(key: key);
 
   final Photo photo;
+  final GalleryBloc bloc;
 
   @override
   Widget build(BuildContext context) {
     return Card(
         child: Stack(children: [
-      Image.network(photo.path),
+      Image.network(
+        photo.path,
+        errorBuilder: (context, error, stackTrace) => const Text('URL failed'),
+      ),
       Positioned(
           top: 0,
           right: 10,
@@ -36,7 +43,7 @@ class PhotoWidget extends StatelessWidget {
                               child: const Text('OK'))
                         ]);
                   }).then((exit) {
-                if (exit) photo.destroy();
+                if (exit) bloc.add(RemovePhotoGalleryEvent(photo));
               });
             },
             icon: const Icon(Icons.delete_forever),

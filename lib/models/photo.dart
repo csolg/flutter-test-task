@@ -25,35 +25,31 @@ class Photo {
   }
 
   static Future<Photo> get(String id) async {
-    final snapshot = await collection().doc(id).get();
-
-    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-
-    print(data);
-
-    return Photo.fromJson(data);
+    return (await ref().doc(id).get()).data()!;
   }
 
   static Future<List<Photo>> getAll() async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
-    final querySnapshot =
-        await collection().where('userUID', isEqualTo: currentUser!.uid).get();
+    final query =
+        await ref().where('userUID', isEqualTo: currentUser!.uid).get();
 
-    return querySnapshot.docs
-        .map((doc) => Photo.fromJson(doc.data() as Map<String, dynamic>))
-        .toList();
+    return query.docs.map((doc) => doc.data()).toList();
   }
 
   Future destroy() async {
-    FirebaseStorage.instance.refFromURL(path).delete().then((_) async {
-      await collection().doc(id).delete();
-    });
+    try {
+      await FirebaseStorage.instance.refFromURL(path).delete();
+    } on Exception catch (_) {}
+    await collection().doc(id).delete();
   }
 
-  static DocumentReference ref(String document) {
-    return collection().doc(document).withConverter<Photo>(
-        fromFirestore: (snapshot, _) => Photo.fromJson(snapshot.data()!),
+  static CollectionReference<Photo> ref() {
+    return collection().withConverter<Photo>(
+        fromFirestore: (snapshot, _) => Photo.fromJson({
+              ...snapshot.data()!,
+              ...{'id': snapshot.id}
+            }),
         toFirestore: (model, _) => model.toJson());
   }
 

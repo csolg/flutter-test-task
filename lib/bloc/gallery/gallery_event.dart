@@ -23,6 +23,20 @@ class LoadingGalleryEvent extends GalleryEvent {
   }
 }
 
+class RemovePhotoGalleryEvent extends GalleryEvent {
+  final Photo photo;
+
+  RemovePhotoGalleryEvent(this.photo);
+
+  @override
+  Stream<GalleryState> applyAsync(
+      {GalleryState? currentState, GalleryBloc? bloc}) async* {
+    yield LoadingGalleryState();
+    await photo.destroy();
+    bloc!.add(LoadGalleryEvent());
+  }
+}
+
 class UploadingGalleryEvent extends GalleryEvent {
   final double progress;
 

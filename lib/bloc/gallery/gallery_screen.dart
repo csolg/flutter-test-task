@@ -45,8 +45,8 @@ class GalleryScreenState extends State<GalleryScreen> {
             return GridView.count(
                 crossAxisCount: 2,
                 children: currentState.photos
-                    .where((photo) => photo.path != null)
-                    .map((photo) => PhotoWidget(photo: photo))
+                    .map((photo) =>
+                        PhotoWidget(photo: photo, bloc: widget._galleryBloc))
                     .toList());
           }
           if (currentState is UploadingGalleryState) {
