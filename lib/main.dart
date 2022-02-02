@@ -25,9 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (BuildContext context) {
-        AuthenticationRepository();
-      },
+      create: (BuildContext context) => AuthenticationRepository(),
       child: GetMaterialApp(
         supportedLocales: const [
           Locale('ru'),

@@ -104,7 +104,8 @@ class SignInAuthenticationEvent extends AuthenticationEvent {
         'phoneNumber': user.user!.phoneNumber,
       });
 
-      AuthenticationRepository.currentUser = user;
+      bloc!.authenticationRepository.currentUser = user;
+      print(user);
 
       Get.off(GalleryPage());
     } catch (_, stackTrace) {
